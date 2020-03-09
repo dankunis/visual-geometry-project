@@ -12,7 +12,7 @@ import sys
 
 import cv2
 
-VIDEO_PATH = "src/resources/cube.mp4" # TODO replace with real video path
+VIDEO_PATH = "resources/cube.mp4" # TODO replace with real video path
 
 def main():
     check_version()
