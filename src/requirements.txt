@@ -1,3 +1,5 @@
 numpy
 opencv-python-headless
 opencv-python
+pyyaml
+tqdm
