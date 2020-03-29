@@ -1,3 +1,0 @@
-Chessboard pictures left01-14 from https://github.com/opencv/opencv/tree/master/samples/data
-
-Tutorial from https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_calib3d/py_calibration/py_calibration.html
