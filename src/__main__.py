@@ -128,7 +128,7 @@ def chessboards():
             cv2.imwrite(IMG_WITH_DRAWING_PATH + "{:05d}.png".format(counter), img)
 
     print("[DRAWING] : Done.")
-    convert_frames_to_video(IMG_WITH_DRAWING_PATH, "resources/video/movie.avi", FPS)
+    convert_frames_to_video(IMG_WITH_DRAWING_PATH, "resources/output.avi", FPS)
     cv2.destroyAllWindows()
 
 
