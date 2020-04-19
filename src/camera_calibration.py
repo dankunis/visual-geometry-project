@@ -6,6 +6,8 @@ import numpy as np
 import yaml
 from tqdm import tqdm
 
+from src.utils import image_resize
+
 
 def calc_camera_calibration(chessboard_size, termination_criteria, calibration_img_path, calibration_config_path):
     print("[CALIBRATION] : Calculating camera calibration...")
@@ -31,7 +33,20 @@ def calc_camera_calibration(chessboard_size, termination_criteria, calibration_i
                 break
 
             img = cv2.imread(fname)
+
+            # resize the image so it would be no bigger than 1920x1080
+            height, width = img.shape[:2]
+            if max(width, height) > 2000:
+                if height > width:
+                    new_width = 1080
+                else:
+                    new_width = 1920
+
+                img = image_resize(img, width=new_width)
+
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            cv2.imshow('gray', gray)
+            cv2.waitKey(500)
 
             # Find the chess board corners
             ret, corners = cv2.findChessboardCorners(gray, (chessboard_x, chessboard_y), None)
@@ -42,13 +57,30 @@ def calc_camera_calibration(chessboard_size, termination_criteria, calibration_i
                 corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), termination_criteria)
                 img_points.append(corners2)
 
+                img = cv2.drawChessboardCorners(img, (chessboard_x, chessboard_y), corners2, ret)
+                cv2.imshow('img', img)
+                cv2.waitKey(500)
+
     cv2.destroyAllWindows()
 
-    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(obj_points, img_points, gray.shape[::-1], None, None)
+    _, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(obj_points, img_points, gray.shape[::-1], None, None)
+
+    reprojection_error = 0
+    for i in range(len(obj_points)):
+        imgpoints2, _ = cv2.projectPoints(obj_points[i], rvecs[i], tvecs[i], mtx, dist)
+        error = cv2.norm(img_points[i], imgpoints2, cv2.NORM_L2) / len(imgpoints2)
+        reprojection_error += error
+
+    reprojection_error /= len(obj_points)
 
     print("[CALIBRATION] : Done with calculating. Saving file in: " + calibration_config_path)
+
     # It's very important to transform the matrix to list.
-    data = {'camera_matrix': np.asarray(mtx).tolist(), 'dist_coeff': np.asarray(dist).tolist()}
+    data = {
+        'camera_matrix': np.asarray(mtx).tolist(),
+        'dist_coeff': np.asarray(dist).tolist(),
+        'reprojection_error': reprojection_error
+    }
     with open(calibration_config_path, "w") as f:
         yaml.dump(data, f)
 

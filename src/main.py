@@ -15,8 +15,8 @@ VIDEO_INPUT_PATH = "../resources/videos/chessboard.MOV"  # TODO replace with rea
 VIDEO_INPUT_FRAMES_PATH = "../resources/vid_to_img/"
 VIDEO_OUTPUT_FRAMES_PATH = "../resources/img_with_drawings/"
 VIDEO_OUTPUT_PATH = "../resources/output.avi"
-CHESSBOARD_PATH = "../resources/chessboard/"
-CALIBRATION_PATH = "../resources/calibration/calibration.yaml"
+CHESSBOARD_PATH = "../resources/chessboard/horizontal/"
+CALIBRATION_PATH = "../resources/calibration/calibration_horizontal.yaml"
 
 CHESSBOARD_SIZE = (9, 6)
 
@@ -31,19 +31,19 @@ def main():
 
     termination_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
-    if not os.path.exists(CALIBRATION_PATH) \
-            or input("Do you want to calibrate the camera coefficients? This may take some time. (yes, no)") == "yes":
+    if not os.path.exists(CALIBRATION_PATH):
         calc_camera_calibration(CHESSBOARD_SIZE, termination_criteria, CHESSBOARD_PATH, CALIBRATION_PATH)
-    else:
-        camera_params = tuple(get_camera_calibration(CALIBRATION_PATH))
-        draw_cube_on_chessboard(CHESSBOARD_SIZE,
-                                termination_criteria,
-                                camera_params,
-                                VIDEO_INPUT_PATH,
-                                VIDEO_INPUT_FRAMES_PATH,
-                                VIDEO_OUTPUT_FRAMES_PATH,
-                                VIDEO_OUTPUT_PATH,
-                                FPS)
+
+    camera_params = tuple(get_camera_calibration(CALIBRATION_PATH))
+
+    draw_cube_on_chessboard(CHESSBOARD_SIZE,
+                            termination_criteria,
+                            camera_params,
+                            VIDEO_INPUT_PATH,
+                            VIDEO_INPUT_FRAMES_PATH,
+                            VIDEO_OUTPUT_FRAMES_PATH,
+                            VIDEO_OUTPUT_PATH,
+                            FPS)
 
 
 def get_camera_calibration(calibration_config_path):

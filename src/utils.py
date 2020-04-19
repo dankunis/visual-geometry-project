@@ -73,3 +73,25 @@ def load_video(path):
         print("[VIDEO] : Successfully loaded video from path: " + path)
 
     return video
+
+
+def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
+    h, w = image.shape[:2]
+
+    # if both the width and height are None, then return the
+    # original image
+    if width is None and height is None:
+        return image
+
+    if width is None:
+        ratio = height / float(h)
+        dim = (int(w * ratio), height)
+    else:
+        ratio = width / float(w)
+        dim = (width, int(h * ratio))
+
+    # resize the image
+    resized = cv2.resize(image, dim, interpolation=inter)
+
+    # return the resized image
+    return resized
