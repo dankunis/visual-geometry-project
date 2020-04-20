@@ -8,9 +8,12 @@
 # @author  Simon Rueba <simon.rueba@student.uibk.ac.at>
 
 
-from src.camera_calibration import *
-from src.draw_cube_chessboard import *
+from camera_calibration import *
+from draw_cube_chessboard import *
+from point_correspondences import *
 
+FRAMES_VIDEO_FRAMES_PATH = "../resources/frames/"
+HCD_OUTPUT = "../resources/hcd/"
 VIDEO_INPUT_PATH = "../resources/videos/chessboard.MOV"  # TODO replace with real video path
 VIDEO_INPUT_FRAMES_PATH = "../resources/vid_to_img/"
 VIDEO_OUTPUT_FRAMES_PATH = "../resources/img_with_drawings/"
@@ -36,14 +39,16 @@ def main():
 
     camera_params = tuple(get_camera_calibration(CALIBRATION_PATH))
 
-    draw_cube_on_chessboard(CHESSBOARD_SIZE,
-                            termination_criteria,
-                            camera_params,
-                            VIDEO_INPUT_PATH,
-                            VIDEO_INPUT_FRAMES_PATH,
-                            VIDEO_OUTPUT_FRAMES_PATH,
-                            VIDEO_OUTPUT_PATH,
-                            FPS)
+    get_key_points(FRAMES_VIDEO_FRAMES_PATH, HCD_OUTPUT)
+
+    #draw_cube_on_chessboard(CHESSBOARD_SIZE,
+    #                        termination_criteria,
+    #                        camera_params,
+    #                        VIDEO_INPUT_PATH,
+    #                        VIDEO_INPUT_FRAMES_PATH,
+    #                        VIDEO_OUTPUT_FRAMES_PATH,
+    #                        VIDEO_OUTPUT_PATH,
+    #                        FPS)
 
 
 def get_camera_calibration(calibration_config_path):

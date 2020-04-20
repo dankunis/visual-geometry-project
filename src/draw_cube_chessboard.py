@@ -2,7 +2,7 @@ from time import sleep
 
 import numpy as np
 
-from src.utils import *
+from utils import *
 
 
 def get_axis_points(object_to_draw):
