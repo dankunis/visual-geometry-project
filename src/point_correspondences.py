@@ -3,6 +3,30 @@ from utils import *
 import cv2
 import numpy as np
 
+
+#SIFT
+def get_SIFT_key_points(input_frames, output_folder):
+    if cv2.__version__ != '3.4.2.16':
+        print("[ERROR] : Your opencv version must be 3.4.2.16 for using SIFT. Please try 'pip install opencv-python==3.4.2.16' and 'pip install opencv-contrib-python==3.4.2.16'")
+        return
+    
+    print("[POINT CORRESPONDENCES] : SIFT - get key points")
+    for counter in range(len(os.listdir(input_frames)) - 1):
+        name = os.path.join(input_frames, 'IMG_' + str(counter + 6363) + '.jpg')
+        img = cv2.imread(name)
+        gray= cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+
+        sift = cv2.xfeatures2d.SIFT_create()
+        #keypoints + descriptor
+        kp, des = sift.detectAndCompute(gray,None)
+
+        img=cv2.drawKeypoints(gray,kp)
+
+        cv2.imwrite(os.path.join(output_folder + "{:05d}.png".format(counter)), img) #save in output folder
+        cv2.imshow(name,img)
+        cv2.waitKey(500)
+        cv2.destroyAllWindows()
+
 #Harris Corner Detector (HCD)
 def get_key_points(input_frames, output_folder):
 

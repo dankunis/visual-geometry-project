@@ -6,7 +6,7 @@ import numpy as np
 import yaml
 from tqdm import tqdm
 
-from src.utils import image_resize
+from utils import image_resize
 
 
 def calc_camera_calibration(chessboard_size, termination_criteria, calibration_img_path, calibration_config_path):

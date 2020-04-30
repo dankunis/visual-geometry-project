@@ -13,6 +13,7 @@ from draw_cube_chessboard import *
 from point_correspondences import *
 
 FRAMES_VIDEO_FRAMES_PATH = "../resources/frames/"
+SIFT_OUTPUT = "../resources/sift/"
 HCD_OUTPUT = "../resources/hcd/"
 VIDEO_INPUT_PATH = "../resources/videos/chessboard.MOV"  # TODO replace with real video path
 VIDEO_INPUT_FRAMES_PATH = "../resources/vid_to_img/"
@@ -39,7 +40,9 @@ def main():
 
     camera_params = tuple(get_camera_calibration(CALIBRATION_PATH))
 
-    get_key_points(FRAMES_VIDEO_FRAMES_PATH, HCD_OUTPUT)
+    #choose sift or harrison corner detection
+    get_SIFT_key_points(FRAMES_VIDEO_FRAMES_PATH, SIFT_OUTPUT)
+    #get_key_points(FRAMES_VIDEO_FRAMES_PATH, HCD_OUTPUT)
 
     #draw_cube_on_chessboard(CHESSBOARD_SIZE,
     #                        termination_criteria,
