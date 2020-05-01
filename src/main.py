@@ -29,9 +29,11 @@ FPS = 60.0
 
 def main():
     check_version()
-
-    os.makedirs(VIDEO_INPUT_FRAMES_PATH, exist_ok=True)
-    os.makedirs(VIDEO_OUTPUT_FRAMES_PATH, exist_ok=True)
+    create_directories(VIDEO_INPUT_FRAMES_PATH,
+                       VIDEO_OUTPUT_FRAMES_PATH,
+                       SIFT_OUTPUT,
+                       HCD_OUTPUT,
+                       os.path.dirname(CALIBRATION_PATH))
 
     termination_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
@@ -123,6 +125,11 @@ def check_version():
         print("You are running python version " + sys.version + ". We recommend python 3.7.2 for expected performance.")
 
     print("Open CV version: " + cv2.__version__)
+
+
+def create_directories(*args):
+    for dir in args:
+        os.makedirs(dir, exist_ok=True)
 
 
 if __name__ == "__main__":
