@@ -15,13 +15,16 @@ def get_SIFT_key_points(input_frames, output_folder):
     for counter in range(len(os.listdir(input_frames)) - 1):
         name = os.path.join(input_frames, 'IMG_' + str(counter + 6363) + '.jpg')
         img = cv2.imread(name)
+
+        img = resizeImg(img)
+
         gray= cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
 
         sift = cv2.xfeatures2d.SIFT_create()
         #keypoints + descriptor
         kp, des = sift.detectAndCompute(gray,None)
 
-        img=cv2.drawKeypoints(gray,kp)
+        img=cv2.drawKeypoints(gray,kp, None)
 
         cv2.imwrite(os.path.join(output_folder + "{:05d}.png".format(counter)), img) #save in output folder
         cv2.imshow(name,img)
@@ -39,15 +42,7 @@ def get_key_points(input_frames, output_folder):
         name = os.path.join(input_frames, 'IMG_' + str(counter + 6363) + '.jpg')
         img = cv2.imread(name)
 
-        # resize the image so it would be no bigger than 1920x1080
-        height, width = img.shape[:2]
-        if max(width, height) > 2000:
-            if height > width:
-                new_width = 1080
-            else:
-                new_width = 1920
-
-            img = image_resize(img, width=new_width)
+        img = resizeImg(img)
 
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         gray = np.float32(gray) #float32 type needed for HCD
@@ -91,3 +86,14 @@ def get_key_points(input_frames, output_folder):
         # cv2.imshow(name,img)
         # cv2.waitKey(500)
         # cv2.destroyAllWindows()
+
+def resizeImg(img):
+    # resize the image so it would be no bigger than 1920x1080
+    height, width = img.shape[:2]
+    if max(width, height) > 2000:
+        if height > width:
+            new_width = 1080
+        else:
+            new_width = 1920
+
+        return image_resize(img, width=new_width)
