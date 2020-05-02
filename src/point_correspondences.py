@@ -2,12 +2,13 @@ from utils import *
 
 import cv2
 import numpy as np
+from distutils.version import LooseVersion, StrictVersion
 
 
 #SIFT
 def get_SIFT_key_points(input_frames, output_folder):
-    if cv2.__version__ != '3.4.2.16':
-        print("[ERROR] : Your opencv version must be 3.4.2.16 for using SIFT. Please try 'pip install opencv-python==3.4.2.16' and 'pip install opencv-contrib-python==3.4.2.16'")
+    if LooseVersion(cv2.__version__) > LooseVersion('3.4.2.16'):
+        print("[ERROR] : Your opencv version must be 3.4.2.16 for using SIFT. Please try 'pip install opencv-python==3.4.2.16' and 'pip install opencv-contrib-python==3.4.2.16'. Your current opencv version is " + cv2.__version__)
         return
     
     print("[POINT CORRESPONDENCES] : SIFT - get key points")
