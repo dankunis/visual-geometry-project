@@ -12,6 +12,7 @@ from camera_calibration import *
 from draw_cube_chessboard import *
 from point_correspondences import *
 
+FEATURE_MATCHING_OUTPUT = "../resources/featureMatchingOutput/"
 FRAMES_VIDEO_FRAMES_PATH = "../resources/frames/"
 SIFT_OUTPUT = "../resources/sift/"
 HCD_OUTPUT = "../resources/hcd/"
@@ -33,6 +34,7 @@ def main():
                        VIDEO_OUTPUT_FRAMES_PATH,
                        SIFT_OUTPUT,
                        HCD_OUTPUT,
+                       FEATURE_MATCHING_OUTPUT,
                        os.path.dirname(CALIBRATION_PATH))
 
     termination_criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -43,8 +45,10 @@ def main():
     camera_params = tuple(get_camera_calibration(CALIBRATION_PATH))
 
     #choose sift or harrison corner detection
-    get_SIFT_key_points(FRAMES_VIDEO_FRAMES_PATH, SIFT_OUTPUT)
+    #get_SIFT_key_points(FRAMES_VIDEO_FRAMES_PATH, SIFT_OUTPUT)
     #get_key_points(FRAMES_VIDEO_FRAMES_PATH, HCD_OUTPUT)
+
+    feature_matching(FRAMES_VIDEO_FRAMES_PATH, FEATURE_MATCHING_OUTPUT)
 
     #draw_cube_on_chessboard(CHESSBOARD_SIZE,
     #                        termination_criteria,
