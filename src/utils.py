@@ -1,4 +1,6 @@
+import fnmatch
 import os
+import pickle
 import sys
 from os.path import isfile, join
 
@@ -33,22 +35,40 @@ def convert_frames_to_video(path_in, path_out, fps):
     print("[CONVERSION] : Video saved in: " + path_out)
 
 
-def video_to_frames(video, path_output_dir):
+def video_to_frames(video, path_output_dir, save_every_nth=1):
     # extract frames from a video and save to directory as 'x.png' where
     # x is the frame index
     vidcap = load_video(video)
     count = 0
+    iteration = 0
 
     while vidcap.isOpened():
         success, image = vidcap.read()
+
+        if iteration % save_every_nth != 0:
+            iteration += 1
+            continue
+
         if success:
             cv2.imwrite(os.path.join(path_output_dir, '%d.png') % count, image)
             count += 1
         else:
             break
+        iteration += 1
+
     print(os.path.abspath(path_output_dir))
     cv2.destroyAllWindows()
     vidcap.release()
+
+
+def read_all_frames(frames_path, frame_transform=lambda x: x):
+    file_names = sorted(fnmatch.filter(os.listdir(frames_path), '*.png'), key=lambda x: int(x[:-4]))
+    frames = []
+
+    for name in file_names:
+        frames.append(frame_transform(cv2.imread(os.path.join(frames_path, name), 0)))
+
+    return frames
 
 
 def load_video(path):
@@ -63,7 +83,7 @@ def load_video(path):
         -------
         video
             return the video if successful, otherwise return none and exit
-        """
+    """
     video = cv2.VideoCapture(path)
 
     if not video.isOpened():
@@ -95,3 +115,26 @@ def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
 
     # return the resized image
     return resized
+
+
+def resize_to_dims(img, dims=(1920, 1080)):
+    # resize the image so it would be no bigger than dims[0] x dims[1]
+    height, width = img.shape[:2]
+    new_width = width
+    if max(width, height) > max(dims):
+        if height > width:
+            new_width = dims[1]
+        else:
+            new_width = dims[0]
+
+    return image_resize(img, width=new_width)
+
+
+def save_object(obj, filepath):
+    with open(filepath, "wb") as fp:
+        pickle.dump(obj, fp)
+
+
+def read_object(filepath):
+    with open(filepath, "rb") as fp:
+        return pickle.load(fp)
