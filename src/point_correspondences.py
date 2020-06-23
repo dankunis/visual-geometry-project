@@ -63,7 +63,7 @@ def feature_matching(input_frames, output_folder=None):
             elif len(point_tracks) > 200:
                 drop_rate = 0.6
             else:
-                drop_rate = 0.4
+                drop_rate = 0.5
 
             is_normal_frame = 1 - len(matches) / len(point_tracks) < drop_rate
             mean_dist = mean([x.distance for x in matches])
