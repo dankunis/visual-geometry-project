@@ -59,7 +59,8 @@ def main():
     #get_key_points(FRAMES_VIDEO_FRAMES_PATH, HCD_OUTPUT)
 
     # increase the last arg to reduce number of frames and speed it up
-    video_to_frames(VIDEO_INPUT_PATH, VIDEO_INPUT_FRAMES_PATH, 6)
+    if not os.listdir(VIDEO_INPUT_FRAMES_PATH):
+        video_to_frames(VIDEO_INPUT_PATH, VIDEO_INPUT_FRAMES_PATH, 6)
 
     all_frames = read_all_frames(VIDEO_INPUT_FRAMES_PATH, frame_transform=resize_to_dims)
 
@@ -100,8 +101,8 @@ def get_camera_calibration(calibration_config_path):
     with open(calibration_config_path) as f:
         loaded_dict = yaml.load(f, Loader=yaml.FullLoader)
 
-    mtx_loaded = loaded_dict.get('camera_matrix')
-    dist_loaded = loaded_dict.get('dist_coeff')
+    mtx_loaded = np.float32(loaded_dict.get('camera_matrix'))
+    dist_loaded = np.float32(loaded_dict.get('dist_coeff'))
 
     print("[CALIBRATION] : Done loading.")
 

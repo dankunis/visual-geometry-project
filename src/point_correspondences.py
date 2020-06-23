@@ -6,12 +6,12 @@ import numpy as np
 from matplotlib import pyplot as plt
 from utils import *
 
-MIN_MATCHES = 50
+MIN_MATCHES = 25
 
 
 def feature_matching(input_frames, output_folder=None):
     print("[FEATURE MATCHING] : start matching. This will take some time...")
-    min_baseline_dist = max(input_frames[0].shape[:2]) / 20
+    min_baseline_dist = max(input_frames[0].shape[:2]) / 17
 
     curr_keyframe = 0
 
@@ -58,7 +58,14 @@ def feature_matching(input_frames, output_folder=None):
                              kp2, matches, (curr_keyframe, next_frame), output_folder)
 
             # check keyframe criteria (distant enough and doesn't cut off more than 50% of matches)
-            is_normal_frame = 1 - len(matches) / len(point_tracks) < 0.5
+            if len(point_tracks) > 1000:
+                drop_rate = 0.8
+            elif len(point_tracks) > 200:
+                drop_rate = 0.6
+            else:
+                drop_rate = 0.4
+
+            is_normal_frame = 1 - len(matches) / len(point_tracks) < drop_rate
             mean_dist = mean([x.distance for x in matches])
             is_keyframe = mean_dist > min_baseline_dist and is_normal_frame and len(matches) >= MIN_MATCHES
 
@@ -134,9 +141,9 @@ def match_frames_between_keyframes(prev_keyframe, kp1, next_keyframe, kp2, inter
             curr_kp.append(intermediate_matches[i - 1]['kp'][curr_frame_match_idx].pt)
 
         all_intermediate_frames_matches[curr_frame] = {
-            'prev_keyframe_pts': np.asarray(common_matches_with_prev, dtype=np.int),
-            'next_keyframe_pts': np.asarray(common_matches_with_next, dtype=np.int),
-            'curr_frame_pts': np.asarray(curr_kp, dtype=np.int)
+            'prev_keyframe_pts': np.asarray(common_matches_with_prev),
+            'next_keyframe_pts': np.asarray(common_matches_with_next),
+            'curr_frame_pts': np.asarray(curr_kp)
         }
 
     return all_intermediate_frames_matches
