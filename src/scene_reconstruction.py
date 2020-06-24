@@ -12,7 +12,8 @@ class Camera:
         self.P = np.dot(K, np.c_[self.R, self.t])
 
     def R_vec(self):
-        return cv2.Rodrigues(self.R)
+        R_vec, _ = cv2.Rodrigues(self.R)
+        return R_vec
 
 
 def apply_mask(arr, mask):
