@@ -121,17 +121,25 @@ def main():
     #points = np.asarray([point1_2D, point2_2D, point3_2D, point5_2D,point6_2D, point4_2D,point7_2D, point8_2D])
     points = np.asarray([point1_2D, point5_2D, point3_2D, point2_2D, point7_2D, point6_2D, point4_2D, point8_2D])'''
 
-    point2 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([806.5, 607.5])]), cameraOfLastKeyframe,
-                                np.asarray([np.asarray([831.2, 501.5])]), K, distortion)
-    point1 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([794, 743.8])]), cameraOfLastKeyframe,
-                                np.asarray([np.asarray([682.8, 591.5])]), K, distortion)
-    sideLen = point1[0][0] - point2[0][0]
-    point3 = np.asarray([[point1[0][0] + sideLen, point1[0][1] + sideLen, point1[0][2]]])
-    point4 = np.asarray([[point1[0][0] + sideLen, point1[0][1] + sideLen, point1[0][2] + sideLen]])
-    point5 = np.asarray([[point1[0][0], point1[0][1] + sideLen, point1[0][2]]])
-    point6 = np.asarray([[point1[0][0], point1[0][1] + sideLen, point1[0][2] + sideLen]])
-    point7 = np.asarray([[point1[0][0], point1[0][1], point1[0][2] + sideLen]])
-    point8 = np.asarray([[point1[0][0] + sideLen, point1[0][1], point1[0][2] + sideLen]])
+    point5 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([794.2, 744.2])]), cameraOfLastKeyframe, np.asarray([np.asarray([683.2, 592.8])]), K, distortion) #0,0,-
+
+    point1 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([814, 501.5])]), cameraOfLastKeyframe, np.asarray([np.asarray([949, 429.5])]), K, distortion) #0,0,0
+
+    sideLen = point1[0][1] - point5[0][1]
+
+    #point2 = np.asarray([[point1[0][0], point1[0][1] + sideLen, point1[0][2]]] -sideLen) #0,+,-
+    point2 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([1072.5, 500])]), cameraOfLastKeyframe, np.asarray([np.asarray([1141, 566.8])]), K, distortion)
+    point3 = np.asarray([[point1[0][0] - sideLen, point1[0][1] + sideLen, point1[0][2]]]) #-,+,0
+    point4 = np.asarray([[point1[0][0], point1[0][1] + sideLen, point1[0][2]]]) #0,+,0
+    #point6 = np.asarray([[point1[0][0] - sideLen, point1[0][1] - sideLen, point1[0][2]]]) #-,-,0
+    point6 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([1092.2, 741])]), cameraOfLastKeyframe, np.asarray([np.asarray([874.8, 757.2])]), K, distortion)
+
+    point7 = np.asarray([[point1[0][0] - sideLen, point1[0][1], point1[0][2] + sideLen]]) #-,0,+
+    point8 = np.asarray([[point1[0][0], point1[0][1], point1[0][2] + sideLen]]) #0,0,+
+
+    #+,0,0  = go left
+    #-,0,0  = go right
+
 
     for i in tqdm(range(keyframes[-1]+1)):
         cube = []
@@ -144,12 +152,12 @@ def main():
         point7_2D, _ = cv2.projectPoints(point7, cameras[i].R_vec(), cameras[i].t, K, distortion)
         point8_2D, _ = cv2.projectPoints(point8, cameras[i].R_vec(), cameras[i].t, K, distortion)
         cube.append(point1_2D)
-        cube.append(point5_2D)
-        cube.append(point3_2D)
         cube.append(point2_2D)
-        cube.append(point7_2D)
-        cube.append(point6_2D)
+        cube.append(point3_2D)
         cube.append(point4_2D)
+        cube.append(point5_2D)
+        cube.append(point6_2D)
+        cube.append(point7_2D)
         cube.append(point8_2D)
         img = draw_cube(all_frames[i], cube)
         cv2.imwrite(os.path.join("./" + "{:05d}.png".format(i)), img)
