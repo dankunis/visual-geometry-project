@@ -66,7 +66,7 @@ def read_all_frames(frames_path, frame_transform=lambda x: x):
     frames = []
 
     for name in file_names:
-        frames.append(frame_transform(cv2.imread(os.path.join(frames_path, name), 0)))
+        frames.append(frame_transform(cv2.imread(os.path.join(frames_path, name), 1)))
 
     return frames
 

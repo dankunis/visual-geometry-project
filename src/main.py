@@ -15,6 +15,8 @@ from scene_reconstruction import *
 
 from utils import *
 
+from tqdm import tqdm
+
 FEATURE_MATCHING_OUTPUT = "../resources/featureMatchingOutput/"
 FRAMES_VIDEO_FRAMES_PATH = "../resources/frames/"
 SIFT_OUTPUT = "../resources/sift/"
@@ -119,17 +121,19 @@ def main():
     #points = np.asarray([point1_2D, point2_2D, point3_2D, point5_2D,point6_2D, point4_2D,point7_2D, point8_2D])
     points = np.asarray([point1_2D, point5_2D, point3_2D, point2_2D, point7_2D, point6_2D, point4_2D, point8_2D])'''
 
-    point1 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([968, 525])]), cameraOfLastKeyframe,
-                                np.asarray([np.asarray([1025, 441])]), K, distortion)
-    point2 = np.asarray([[point1[0][0] + 0.5, point1[0][1], point1[0][2]]])
-    point3 = np.asarray([[point1[0][0] + 0.5, point1[0][1] + 0.5, point1[0][2]]])
-    point4 = np.asarray([[point1[0][0] + 0.5, point1[0][1] + 0.5, point1[0][2] + 0.5]])
-    point5 = np.asarray([[point1[0][0], point1[0][1] + 0.5, point1[0][2]]])
-    point6 = np.asarray([[point1[0][0], point1[0][1] + 0.5, point1[0][2] + 0.5]])
-    point7 = np.asarray([[point1[0][0], point1[0][1], point1[0][2] + 0.5]])
-    point8 = np.asarray([[point1[0][0] + 0.5, point1[0][1], point1[0][2] + 0.5]])
-    
-    for i in range(keyframes[-1]+1):
+    point2 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([806.5, 607.5])]), cameraOfLastKeyframe,
+                                np.asarray([np.asarray([831.2, 501.5])]), K, distortion)
+    point1 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([794, 743.8])]), cameraOfLastKeyframe,
+                                np.asarray([np.asarray([682.8, 591.5])]), K, distortion)
+    sideLen = point1[0][0] - point2[0][0]
+    point3 = np.asarray([[point1[0][0] + sideLen, point1[0][1] + sideLen, point1[0][2]]])
+    point4 = np.asarray([[point1[0][0] + sideLen, point1[0][1] + sideLen, point1[0][2] + sideLen]])
+    point5 = np.asarray([[point1[0][0], point1[0][1] + sideLen, point1[0][2]]])
+    point6 = np.asarray([[point1[0][0], point1[0][1] + sideLen, point1[0][2] + sideLen]])
+    point7 = np.asarray([[point1[0][0], point1[0][1], point1[0][2] + sideLen]])
+    point8 = np.asarray([[point1[0][0] + sideLen, point1[0][1], point1[0][2] + sideLen]])
+
+    for i in tqdm(range(keyframes[-1]+1)):
         cube = []
         point1_2D, _ = cv2.projectPoints(point1, cameras[i].R_vec(), cameras[i].t, K, distortion)
         point2_2D, _ = cv2.projectPoints(point2, cameras[i].R_vec(), cameras[i].t, K, distortion)
@@ -155,15 +159,6 @@ def main():
     # TODO: after getting the cameras pick the first and last keyframe, manually choose same coordinates there
     # example, corners of the middle box and triangulate them (get 3d points). than iterate over all frames and
     # project these 3d points using the estimated cameras
-
-    draw_cube_on_chessboard(CHESSBOARD_SIZE,
-                            termination_criteria,
-                            camera_params,
-                            VIDEO_INPUT_PATH,
-                            VIDEO_INPUT_FRAMES_PATH,
-                            VIDEO_OUTPUT_FRAMES_PATH,
-                            VIDEO_OUTPUT_PATH,
-                            FPS, points)
 
 
 def get_camera_calibration(calibration_config_path):

@@ -9,7 +9,7 @@ class Camera:
         else:
             self.R = R
         self.t = t
-        self.P = np.dot(K, np.c_[self.R, self.t])
+        self.P = np.c_[self.R, self.t]
 
     def R_vec(self):
         R_vec, _ = cv2.Rodrigues(self.R)
