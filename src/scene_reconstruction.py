@@ -1,3 +1,15 @@
+#!/usr/bin/env python3.7.2
+# vim: set ts=4 et:
+# -*- indent-tabs-mode: t; tab-width: 4 -*-
+#
+# @brief   Class camera, stereo functions
+# @details All methods related to camera poses, world poses can be found here
+# @author  Simon Rueba <simon.rueba@student.uibk.ac.at>
+#          Daniel Kunis <daniil.kunis@student.uibk.ac>
+#          Florian Maier <florian.Maier@student.uibk.ac>
+
+
+
 import cv2
 import numpy as np
 
@@ -17,10 +29,22 @@ class Camera:
 
 
 def apply_mask(arr, mask):
+    '''
+
+    :param arr:
+    :param mask:
+    :return:
+    '''
     return np.array([[x for (x, m) in zip(arr, mask) if m[0] == 1]])
 
 
 def keypoints_coordinates(keypoints):
+    '''
+
+    :param keypoints:
+    :return:
+    '''
+
     kp = []
     for trace in keypoints:
         kp.append(np.float32([x[0].pt for x in trace['2d_points']]))
@@ -28,6 +52,14 @@ def keypoints_coordinates(keypoints):
 
 
 def get_projection_camera(pts1, pts2, K):
+    '''
+
+    :param pts1:
+    :param pts2:
+    :param K:
+    :return:
+    '''
+
     E, mask = cv2.findEssentialMat(pts1, pts2, K, method=cv2.RANSAC, prob=0.999, threshold=0.1)
 
     pts1 = apply_mask(pts1, mask)
@@ -41,6 +73,17 @@ def get_projection_camera(pts1, pts2, K):
 
 
 def triangulate_points(P1, pts1, P2, pts2, K, distortion):
+    '''
+
+    :param P1:
+    :param pts1:
+    :param P2:
+    :param pts2:
+    :param K:
+    :param distortion:
+    :return:
+    '''
+
     pts1 = cv2.undistortPoints(np.expand_dims(pts1, axis=1).astype(dtype=np.float32), cameraMatrix=K,
                                distCoeffs=distortion)
     pts2 = cv2.undistortPoints(np.expand_dims(pts2, axis=1).astype(dtype=np.float32), cameraMatrix=K,
@@ -58,11 +101,30 @@ def triangulate_points(P1, pts1, P2, pts2, K, distortion):
 
 
 def resection_camera(points_2d, points_3d, K, distorions):
+    '''
+
+    :param points_2d:
+    :param points_3d:
+    :param K:
+    :param distorions:
+    :return:
+    '''
     _, R, t, _ = cv2.solvePnPRansac(points_3d, points_2d, K, distorions, reprojectionError=2.0)
     return Camera(R, t, K)
 
 
 def stereo_reconstruction(all_frames, keyframes, points_2d, intermediate_frames_matches, K, distortions):
+    '''
+
+    :param all_frames:
+    :param keyframes:
+    :param points_2d:
+    :param intermediate_frames_matches:
+    :param K:
+    :param distortions:
+    :return:
+    '''
+
     cameras = [None] * len(all_frames)
 
     # points_3d = np.empty((points_2d.shape[0], points_2d.shape[1], 3), dtype=np.float)

@@ -1,3 +1,13 @@
+#!/usr/bin/env python3.7.2
+# vim: set ts=4 et:
+# -*- indent-tabs-mode: t; tab-width: 4 -*-
+#
+# @brief   Camera Calibration function
+# @details In this function the camera calibration will be calculated from a given chessboard_images
+# @author  Simon Rueba <simon.rueba@student.uibk.ac.at>
+#          Daniel Kunis <daniil.kunis@student.uibk.ac>
+#          Florian Maier <florian.Maier@student.uibk.ac>
+
 import glob
 import os
 
@@ -6,10 +16,18 @@ import numpy as np
 import yaml
 from tqdm import tqdm
 
-from utils import image_resize
+from src.utils import image_resize
 
 
 def calc_camera_calibration(chessboard_size, termination_criteria, calibration_img_path, calibration_config_path):
+    '''
+    Calculates the camera calibration from a given chessboard_images
+    :param chessboard_size: Size of the chessboard_images
+    :param termination_criteria: number of iterations and/or the accuracy
+    :param calibration_img_path: Path to the chessboard_images
+    :param calibration_config_path: Path on where to store the calibration results
+    :return: None
+    '''
     print("[CALIBRATION] : Calculating camera calibration...")
 
     chessboard_x, chessboard_y = chessboard_size

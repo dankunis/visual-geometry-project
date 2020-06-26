@@ -1,4 +1,13 @@
-from distutils.version import LooseVersion
+#!/usr/bin/env python3.7.2
+# vim: set ts=4 et:
+# -*- indent-tabs-mode: t; tab-width: 4 -*-
+#
+# @brief   Point correspondences functios
+# @details In this file all functions related to feature matching, matching keyframes and drawing them can be found
+# @author  Simon Rueba <simon.rueba@student.uibk.ac.at>
+#          Daniel Kunis <daniil.kunis@student.uibk.ac>
+#          Florian Maier <florian.Maier@student.uibk.ac>
+
 from statistics import mean
 
 import cv2
@@ -10,6 +19,12 @@ MIN_MATCHES = 25
 
 
 def feature_matching(input_frames, output_folder=None):
+    '''
+    Matches features between frames
+    :param input_frames: directory from where to read frames
+    :param output_folder: directory on where to store frames with matched keypoints drawn
+    :return: keyframes, point_tracks, intermediate_frames_matches
+    '''
     print("[FEATURE MATCHING] : start matching. This will take some time...")
     min_baseline_dist = max(input_frames[0].shape[:2]) / 17
 
@@ -119,6 +134,17 @@ def feature_matching(input_frames, output_folder=None):
 
 def match_frames_between_keyframes(prev_keyframe, kp1, next_keyframe, kp2, intermediate_matches,
                                    kf_matches, all_intermediate_frames_matches):
+    '''
+    Matches keypoints between keyframes
+    :param prev_keyframe: Keyframe from where to take keypoints
+    :param kp1: keypoints of frame 1
+    :param next_keyframe: Keyrame2 from where to take keypoints
+    :param kp2: keypoints2 of frame 2
+    :param intermediate_matches: intermediate keyframe matches
+    :param kf_matches: keyframe matches
+    :param all_intermediate_frames_matches:
+    :return:
+    '''
     for i in range(1, next_keyframe - prev_keyframe):
         curr_frame = prev_keyframe + i
 
@@ -150,6 +176,17 @@ def match_frames_between_keyframes(prev_keyframe, kp1, next_keyframe, kp2, inter
 
 
 def draw_matches(img1, kp1, img2, kp2, matches, pos, output_folder):
+    '''
+        Draws green colored lines between to frames based on detected keypoints
+        :param img1: Image 1 from where to take keypoints
+        :param kp1: keypoints of image one
+        :param img2: Image 2 from where to take keypoints
+        :param kp2: keypoints of image two
+        :param matches: List of matches
+        :param pos: tuple of current keyframe and  next_frame
+        :param output_folder: path on where to save the result
+        :return: None
+        '''
     src_pts = np.float32([kp1[m.queryIdx].pt for m in matches]).reshape(-1, 1, 2)
     dst_pts = np.float32([kp2[m.trainIdx].pt for m in matches]).reshape(-1, 1, 2)
     M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
@@ -163,156 +200,3 @@ def draw_matches(img1, kp1, img2, kp2, matches, pos, output_folder):
     img3 = cv2.drawMatches(img1, kp1, img2, kp2, matches, None, **draw_params)
 
     plt.imshow(img3, 'gray'), plt.savefig(output_folder + "img%s+%s" % pos)
-
-
-# old code below. might be useful, but wasn't committed. delete it later
-
-# matched_keyframes = [None] * amount_pics
-#
-# # compare current image with successor image
-# for i in tqdm(range(amount_pics - 1)):
-#     img1 = input_frames[i]  # queryImage
-#
-#     # Initiate SIFT detector
-#     sift = cv2.xfeatures2d.SIFT_create()
-#
-#     # find the keypoints and descriptors with SIFT
-#     kp1, des1 = sift.detectAndCompute(img1, None)
-#
-#     # not enough key points
-#     if len(kp1) < MIN_MATCH_COUNT:
-#         continue
-#
-#     matched_keyframes[i] = []
-#
-#     # match with all other frames
-#     for j in range(i + 1, amount_pics):
-#         img2 = input_frames[j]  # trainImage
-#         kp2, des2 = sift.detectAndCompute(img2, None)
-#
-#         FLANN_INDEX_KDTREE = 0
-#         index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
-#         search_params = dict(checks=50)
-#
-#         flann = cv2.FlannBasedMatcher(index_params, search_params)
-#
-#         matches = flann.knnMatch(des1, des2, k=2)
-#
-#         # store all the good matches as per Lowe's ratio test.
-#         good = []
-#         for m, n in matches:
-#             if m.distance < 0.7 * n.distance:
-#                 good.append(m)
-#
-#         if len(good) > MIN_MATCH_COUNT:
-#             src_pts = np.float32([kp1[m.queryIdx].pt for m in good]).reshape(-1, 1, 2)
-#             dst_pts = np.float32([kp2[m.trainIdx].pt for m in good]).reshape(-1, 1, 2)
-#
-#             matched_keyframes[i].append({
-#                 "matching_keyframe": j,
-#                 "src_pts": src_pts,
-#                 "dst_pts": dst_pts,
-#                 "matches": good
-#             })
-#
-#             M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
-#             matchesMask = mask.ravel().tolist()
-#
-#             h, w = img1.shape
-#             pts = np.float32([[0, 0], [0, h - 1], [w - 1, h - 1], [w - 1, 0]]).reshape(-1, 1, 2)
-#             dst = cv2.perspectiveTransform(pts, M)
-#
-#             img2 = cv2.polylines(img2, [np.int32(dst)], True, 255, 3, cv2.LINE_AA)
-#         else:
-#             print("[FEATURE MATCHING] : Not enough matches are found between %d and %d - %d/%d" % (i, j, len(good),
-#                                                                                                    MIN_MATCH_COUNT))
-#             matchesMask = None
-#
-#
-#     if len(matched_keyframes[i]) == 0:
-#         matched_keyframes[i] = None
-#
-# return matched_keyframes
-
-
-# SIFT
-def get_SIFT_key_points(input_frames, output_folder):
-    if LooseVersion(cv2.__version__) > LooseVersion('3.4.2.16'):
-        print(
-            "[ERROR] : Your opencv version must be 3.4.2.16 for using SIFT. Please try"
-            "'pip install opencv-python==3.4.2.16' and 'pip install opencv-contrib-python==3.4.2.16'."
-            "Your current opencv version is " + cv2.__version__)
-        return
-
-    print("[POINT CORRESPONDENCES] : SIFT - get key points")
-    for counter in tqdm(range(len(os.listdir(input_frames)) - 1)):
-        name = os.path.join(input_frames, 'IMG_' + str(counter + 6363) + '.jpg')
-        img = cv2.imread(name)
-
-        img = resize_to_dims(img)
-
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
-        sift = cv2.xfeatures2d.SIFT_create()
-        # keypoints + descriptor
-        kp, des = sift.detectAndCompute(gray, None)
-
-        img = cv2.drawKeypoints(gray, kp, None)
-
-        cv2.imwrite(os.path.join(output_folder + "{:05d}.png".format(counter)), img)  # save in output folder
-        # cv2.imshow(name,img)
-        cv2.waitKey(500)
-        cv2.destroyAllWindows()
-    print("[POINT CORRESPONDENCES] : SIFT - output in " + output_folder)
-
-
-# Harris Corner Detector (HCD)
-def get_key_points(input_frames, output_folder):
-    print("[POINT CORRESPONDENCES] : Harris Corner Detection - get key points")
-    for counter in tqdm(range(len(os.listdir(input_frames)) - 1)):
-        # os.path.join(input_frames, 'IMG_' + str(counter + 6363) + '.jpg') #for "frames" pictures
-        # os.path.join(input_frames, str(counter) + '.png') #for chessboard pictures
-        # change function parameter as well
-        name = os.path.join(input_frames, 'IMG_' + str(counter + 6363) + '.jpg')
-        img = cv2.imread(name)
-
-        img = resize_to_dims(img)
-
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        gray = np.float32(gray)  # float32 type needed for HCD
-        # gray = input image
-        # blockSize = It is the size of neighbourhood considered for corner detection
-        # ksize = Aperture parameter of Sobel derivative used.
-        # k = Harris detector free parameter in the equation.
-        # values taken from https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_features_harris/py_features_harris.html
-        dst = cv2.cornerHarris(gray, 2, 3, 0.04)
-
-        # result is dilated for marking the corners, not important
-        dst = cv2.dilate(dst, None)
-
-        # Threshold for an optimal value, it may vary depending on the image.
-        img[dst > 0.01 * dst.max()] = [0, 0, 255]
-
-        cv2.imwrite(os.path.join(output_folder + "{:05d}.png".format(counter)), img)  # save in output folder
-        # cv2.imshow(name,img)
-        cv2.waitKey(500)
-        cv2.destroyAllWindows()
-
-        # optional: more accuracy with SubPixel:
-
-        # ret, dst = cv2.threshold(dst,0.01*dst.max(),255,0)
-        # dst = np.uint8(dst)
-        # # find centroids
-        # ret, labels, stats, centroids = cv2.connectedComponentsWithStats(dst)
-        # # define the criteria to stop and refine the corners
-        # criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 100, 0.001)
-        # corners = cv2.cornerSubPix(gray,np.float32(centroids),(5,5),(-1,-1),criteria)
-        # # Now draw them
-        # res = np.hstack((centroids,corners))
-        # res = np.int0(res)
-        # img[res[:,1],res[:,0]]=[0,0,255]
-        # img[res[:,3],res[:,2]] = [0,255,0]
-        # #show
-        # cv2.imshow(name,img)
-        # cv2.waitKey(500)
-        # cv2.destroyAllWindows()
