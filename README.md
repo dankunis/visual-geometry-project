@@ -57,7 +57,7 @@ python3 main.py
 
 
 
-We provide intermediate results (camera calibration results and keypoint matching) to provide a fast initial run. In order to run all of the steps delete these files:
+We provide intermediate results (camera calibration results and keypoint matching) to provide a fast initial run (it takes less than 5 min on MacBook Pro). In order to run all of the steps delete these files:
 ```bash
 rm -rf ../resources/tmp/ ../resources/vid_to_img ../resources/calibration
 ```
