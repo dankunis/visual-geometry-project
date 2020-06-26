@@ -39,7 +39,7 @@ To run the project you need the following python packages:
 
 * matplotlib
 
-  
+
 
 All of these packages can be obtained by running:
 
@@ -53,6 +53,13 @@ Execute the program:
 
 ```bash
 python3 main.py
+```
+
+
+
+We provide intermediate results (camera calibration results and keypoint matching) to provide a fast initial run. In order to run all of the steps delete these files:
+```bash
+rm -rf ../resources/tmp/ ../resources/vid_to_img ../resources/calibration
 ```
 
 
