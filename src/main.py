@@ -12,10 +12,8 @@ from camera_calibration import *
 from draw_cube_chessboard import *
 from point_correspondences import *
 from scene_reconstruction import *
-
-from utils import *
-
 from tqdm import tqdm
+from utils import *
 
 FEATURE_MATCHING_OUTPUT = "../resources/featureMatchingOutput/"
 FRAMES_VIDEO_FRAMES_PATH = "../resources/frames/"
@@ -24,7 +22,7 @@ VIDEO_INPUT_FRAMES_PATH = "../resources/vid_to_img/"
 VIDEO_OUTPUT_FRAMES_PATH = "../resources/img_with_drawings/"
 VIDEO_OUTPUT_PATH = "../resources/output.avi"
 CHESSBOARD_PATH = "../resources/chessboard/"
-CALIBRATION_PATH = "../resources/calibration/calibration_horizontal.yaml"
+CALIBRATION_PATH = "../resources/calibration/calibration.yaml"
 MATCHED_KEYFRAMES_PATH = "../resources/tmp/matched_keyframes.pickle"
 MATCHED_INTERMEDIATE_FRAMES_PATH = "../resources/tmp/matched_intermediate.pickle"
 KEYFRAMES_IDX_PATH = "../resources/tmp/keyframes_idx.pickle"
@@ -121,13 +119,7 @@ def main():
         img = draw_cube(all_frames[i], cube)
         cv2.imwrite(os.path.join(VIDEO_OUTPUT_FRAMES_PATH + "{:05d}.png".format(i)), img)
 
-    convert_frames_to_video(VIDEO_OUTPUT_FRAMES_PATH, VIDEO_OUTPUT_PATH, 30)
-
-    # TODO: bundle adjustment (after we learn how to draw)
-
-    # TODO: after getting the cameras pick the first and last keyframe, manually choose same coordinates there
-    # example, corners of the middle box and triangulate them (get 3d points). than iterate over all frames and
-    # project these 3d points using the estimated cameras
+    convert_frames_to_video(VIDEO_OUTPUT_FRAMES_PATH, VIDEO_OUTPUT_PATH, 20)
 
 
 def get_camera_calibration(calibration_config_path):
