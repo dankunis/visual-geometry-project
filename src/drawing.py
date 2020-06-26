@@ -13,11 +13,12 @@ from utils import *
 
 
 def draw_wireframe_cube(image, corners):
-    ''' Draws a colored wireframe cube in the image at given positions
+    """
+    Draws a colored wireframe cube in the image at given positions
     :param image: Image on which to draw the cube
     :param corners: 8 corners of the cube in xy coordinates
     :return: Image with a cube drawn at position corners
-    '''
+    """
     corners = np.int32(corners).reshape(-1, 2)
     image = cv2.drawContours(image, [corners[:4]], -1, (0, 255, 0), -3)
 

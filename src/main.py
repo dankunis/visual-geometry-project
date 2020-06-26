@@ -21,8 +21,6 @@ from tqdm import tqdm
 
 FEATURE_MATCHING_OUTPUT = "../resources/feature_matching_output/"
 FRAMES_VIDEO_FRAMES_PATH = "../resources/frames/"
-SIFT_OUTPUT = "../resources/sift/"
-HCD_OUTPUT = "../resources/hcd/"
 VIDEO_INPUT_PATH = "../resources/videos/boxes.MOV"
 VIDEO_INPUT_FRAMES_PATH = "../resources/vid_to_img/"
 VIDEO_OUTPUT_FRAMES_PATH = "../resources/img_with_drawings/"
@@ -46,8 +44,6 @@ def main():
     # Create all necessary directories if the dont't exist yet
     create_directories(VIDEO_INPUT_FRAMES_PATH,
                        VIDEO_OUTPUT_FRAMES_PATH,
-                       SIFT_OUTPUT,
-                       HCD_OUTPUT,
                        FEATURE_MATCHING_OUTPUT,
                        os.path.dirname(CALIBRATION_PATH),
                        os.path.dirname(MATCHED_KEYFRAMES_PATH),

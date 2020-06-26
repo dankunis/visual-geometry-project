@@ -20,14 +20,14 @@ from utils import image_resize
 
 
 def calc_camera_calibration(chessboard_size, termination_criteria, calibration_img_path, calibration_config_path):
-    '''
+    """
     Calculates the camera calibration from a given chessboard_images
     :param chessboard_size: Size of the chessboard_images
     :param termination_criteria: number of iterations and/or the accuracy
     :param calibration_img_path: Path to the chessboard_images
     :param calibration_config_path: Path on where to store the calibration results
     :return: None
-    '''
+    """
     print("[CALIBRATION] : Calculating camera calibration...")
 
     chessboard_x, chessboard_y = chessboard_size
@@ -63,8 +63,6 @@ def calc_camera_calibration(chessboard_size, termination_criteria, calibration_i
                 img = image_resize(img, width=new_width)
 
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            cv2.imshow('gray', gray)
-            cv2.waitKey(500)
 
             # Find the chess board corners
             ret, corners = cv2.findChessboardCorners(gray, (chessboard_x, chessboard_y), None)
@@ -74,10 +72,6 @@ def calc_camera_calibration(chessboard_size, termination_criteria, calibration_i
                 obj_points.append(objp)
                 corners2 = cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), termination_criteria)
                 img_points.append(corners2)
-
-                img = cv2.drawChessboardCorners(img, (chessboard_x, chessboard_y), corners2, ret)
-                cv2.imshow('img', img)
-                cv2.waitKey(500)
 
     cv2.destroyAllWindows()
 

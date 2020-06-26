@@ -8,14 +8,12 @@
 #          Daniel Kunis <daniil.kunis@student.uibk.ac>
 #          Florian Maier <florian.Maier@student.uibk.ac>
 
-
-
 import cv2
 import numpy as np
 
 
 class Camera:
-    def __init__(self, R, t, K):
+    def __init__(self, R, t):
         if R.shape[1] == 1:
             self.R, _ = cv2.Rodrigues(R)
         else:
@@ -29,21 +27,22 @@ class Camera:
 
 
 def apply_mask(arr, mask):
-    '''
-
-    :param arr:
-    :param mask:
-    :return:
-    '''
+    """
+    Filters an array according to a binary mask
+    :param arr: array to filter
+    :param mask: mask to apply
+    :return: filtered array
+    """
     return np.array([[x for (x, m) in zip(arr, mask) if m[0] == 1]])
 
 
 def keypoints_coordinates(keypoints):
-    '''
-
-    :param keypoints:
-    :return:
-    '''
+    """
+    Extracts the keypoints coordinates from
+    the data structure formed by feature_matching function
+    :param keypoints: data structure returned by feature_matching
+    :return: keypoints coordinates array
+    """
 
     kp = []
     for trace in keypoints:
@@ -52,13 +51,14 @@ def keypoints_coordinates(keypoints):
 
 
 def get_projection_camera(pts1, pts2, K):
-    '''
-
+    """
+    Recovers the relative camera rotation and the translation from
+    an estimated essential matrix and the corresponding points in two images, using cheirality check
     :param pts1:
     :param pts2:
     :param K:
-    :return:
-    '''
+    :return: Camera
+    """
 
     E, mask = cv2.findEssentialMat(pts1, pts2, K, method=cv2.RANSAC, prob=0.999, threshold=0.1)
 
@@ -69,20 +69,20 @@ def get_projection_camera(pts1, pts2, K):
 
     _, R, t, _ = cv2.recoverPose(E, pts1, pts2, K)
 
-    return Camera(R, t, K)
+    return Camera(R, t)
 
 
 def triangulate_points(P1, pts1, P2, pts2, K, distortion):
-    '''
-
-    :param P1:
-    :param pts1:
-    :param P2:
-    :param pts2:
-    :param K:
-    :param distortion:
-    :return:
-    '''
+    """
+    Estimate the 3d postiion of the given points
+    :param P1: first camera
+    :param pts1: 2d points on the first image
+    :param P2: second camera
+    :param pts2: 2d points on the second image
+    :param K: cameras intrinsic params
+    :param distortion: camera distortions
+    :return: 3d coordinates of the points
+    """
 
     pts1 = cv2.undistortPoints(np.expand_dims(pts1, axis=1).astype(dtype=np.float32), cameraMatrix=K,
                                distCoeffs=distortion)
@@ -101,21 +101,21 @@ def triangulate_points(P1, pts1, P2, pts2, K, distortion):
 
 
 def resection_camera(points_2d, points_3d, K, distorions):
-    '''
-
+    """
+    Finds an object pose from 3D-2D point correspondences using the RANSAC scheme
     :param points_2d:
     :param points_3d:
     :param K:
     :param distorions:
     :return:
-    '''
+    """
     _, R, t, _ = cv2.solvePnPRansac(points_3d, points_2d, K, distorions, reprojectionError=2.0)
-    return Camera(R, t, K)
+    return Camera(R, t)
 
 
 def stereo_reconstruction(all_frames, keyframes, points_2d, intermediate_frames_matches, K, distortions):
-    '''
-
+    """
+    Recovers all of the cameras. The algorithm is described in the report.
     :param all_frames:
     :param keyframes:
     :param points_2d:
@@ -123,14 +123,14 @@ def stereo_reconstruction(all_frames, keyframes, points_2d, intermediate_frames_
     :param K:
     :param distortions:
     :return:
-    '''
+    """
 
     cameras = [None] * len(all_frames)
 
     # points_3d = np.empty((points_2d.shape[0], points_2d.shape[1], 3), dtype=np.float)
 
     # initial reconstruction
-    cameras[keyframes[0]] = Camera(np.identity(3), np.asarray([0, 0, 0], dtype=float), K)
+    cameras[keyframes[0]] = Camera(np.identity(3), np.asarray([0, 0, 0], dtype=float))
     cameras[keyframes[-1]] = get_projection_camera(points_2d[:, 0, :], points_2d[:, -1, :], K)
 
     mid_idx = int(len(keyframes) / 2)
