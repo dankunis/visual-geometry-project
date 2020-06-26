@@ -55,14 +55,6 @@ Execute the program:
 python3 main.py
 ```
 
-## Usage
-
-The program can be simply run by not passing any arguments to the main because it will load all previously calibrated files and generate the resulting video. In case you want to recalculate some parameters of the programm
-you can pass the following parametrs to main.py. 
-
-**Disclaimer:** Recalculating may take some time (5-10 min) depending on the task. 
-
-
 
 
 ## Demo
