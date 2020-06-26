@@ -133,12 +133,9 @@ def stereo_reconstruction(all_frames, keyframes, points_2d, intermediate_frames_
     cameras[keyframes[0]] = Camera(np.identity(3), np.asarray([0, 0, 0], dtype=float))
     cameras[keyframes[-1]] = get_projection_camera(points_2d[:, 0, :], points_2d[:, -1, :], K)
 
-    mid_idx = int(len(keyframes) / 2)
     points_3d = triangulate_points(cameras[keyframes[0]].P, points_2d[:, 0, :],
                                    cameras[keyframes[-1]].P, points_2d[:, -1, :],
                                    K, distortions)
-
-    cameras[keyframes[mid_idx]] = resection_camera(points_2d[:, mid_idx, :], points_3d, K, distortions)
 
     # resection other
     for i in range(1, len(keyframes) - 1):
