@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.2.23)  25 JUN 2020 23:26
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.2.23)  26 JUN 2020 22:07
 entering extended mode
 **./Report.tex
 (Report.tex
@@ -1039,7 +1039,7 @@ Class scrartcl Warning: Incompatible usage of \@ssect detected.
 ne 180.
 
 
-Overfull \hbox (65.72475pt too wide) in paragraph at lines 182--194
+Overfull \hbox (57.15092pt too wide) in paragraph at lines 182--194
 [][] 
  []
 
@@ -1055,11 +1055,11 @@ Package rerunfilecheck Info: File `Report.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
  ) 
 Here is how much of TeX's memory you used:
- 14662 strings out of 481545
- 251448 string characters out of 2925113
+ 14642 strings out of 481545
+ 251458 string characters out of 2925113
  673412 words of memory out of 3000000
  29382 multiletter control sequences out of 15000+200000
- 641014 words of font info for 256 fonts, out of 3000000 for 9000
+ 639286 words of font info for 241 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
  48i,11n,53p,10127b,497s stack positions out of 5000i,500n,10000p,200000b,50000s
 {D:/Programme/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc}<C:/Users/1flor/AppData/
@@ -1067,7 +1067,7 @@ Roaming/MiKTeX/2.9/fonts/type1/public/fourier/fourier-ms.pfb><C:/Users/1flor/Ap
 pData/Roaming/MiKTeX/2.9/fonts/type1/adobe/utopia/putb8a.pfb><C:/Users/1flor/Ap
 pData/Roaming/MiKTeX/2.9/fonts/type1/adobe/utopia/putr8a.pfb><C:/Users/1flor/Ap
 pData/Roaming/MiKTeX/2.9/fonts/type1/adobe/utopia/putri8a.pfb>
-Output written on Report.pdf (9 pages, 11535600 bytes).
+Output written on Report.pdf (9 pages, 11535627 bytes).
 PDF statistics:
  113 PDF objects out of 1000 (max. 8388607)
  29 named destinations out of 1000 (max. 500000)
