@@ -11,6 +11,7 @@
 import numpy as np
 from utils import *
 
+
 def draw_wireframe_cube(image, corners):
     ''' Draws a colored wireframe cube in the image at given positions
     :param image: Image on which to draw the cube

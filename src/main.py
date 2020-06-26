@@ -11,7 +11,7 @@
 
 
 from camera_calibration import *
-from draw_cube_chessboard import *
+from drawing import *
 from point_correspondences import *
 from scene_reconstruction import *
 
@@ -61,7 +61,7 @@ def main():
     if not os.path.exists(CALIBRATION_PATH):
         calc_camera_calibration(CHESSBOARD_SIZE, termination_criteria, CHESSBOARD_PATH, CALIBRATION_PATH)
 
-    # Get calibration paramaters (Camera matrix and distortion)
+    # Get calibration parameters (Camera matrix and distortion)
     K, distortion = get_camera_calibration(CALIBRATION_PATH)
 
     # increase the last arg to reduce number of frames and speed it up
@@ -71,7 +71,8 @@ def main():
     # Get all frames sorted by name (number)
     all_frames = read_all_frames(VIDEO_INPUT_FRAMES_PATH, frame_transform=resize_to_dims)
 
-    # Get keyframes, keypoints, intermediate_frames_matches by feature matching consecutive frames if they don't exist saved in a file yet
+    # Get keyframes, keypoints, intermediate_frames_matches by feature
+    # matching consecutive frames if they don't exist saved in a file yet
     if not os.path.exists(MATCHED_KEYFRAMES_PATH) \
             or not os.path.exists(MATCHED_INTERMEDIATE_FRAMES_PATH) \
             or not os.path.exists(KEYFRAMES_IDX_PATH):
@@ -86,51 +87,40 @@ def main():
         points_2D = read_object(MATCHED_KEYFRAMES_PATH)
         intermediate_frames_matches = read_object(MATCHED_INTERMEDIATE_FRAMES_PATH)
 
-    # Caluclate keyframes from stereo reconstruction
+    # Calculate keyframes from stereo reconstruction
     cameras = stereo_reconstruction(all_frames, keyframes, points_2D, intermediate_frames_matches, K, distortion)
 
-
     # Get keyframes from camera
-    print("[INFO] : We have %s frames, %s of them are keyframes. The first keyframe is frame %s and the last keyframe is frame %s." % (len(all_frames), len(keyframes), keyframes[0], keyframes[-1]))
-    cameraOfFirstKeyframe = cameras[keyframes[0]].P
-    cameraOfLastKeyframe = cameras[keyframes[-1]].P
+    print("[INFO] : We have {} frames, {} of them are keyframes. "
+          "The first keyframe is frame {} and the last keyframe is frame {}."
+          .format(len(all_frames), len(keyframes), keyframes[0], keyframes[-1]))
+
+    first_keyframe_camera = cameras[keyframes[0]].P
+    last_keyframe_camera = cameras[keyframes[-1]].P
 
     # Calculate the corners in image coordinates and the length of the sides of the cube to inherit the other ones
-    point5 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([794.2, 744.2])]), cameraOfLastKeyframe, np.asarray([np.asarray([683.2, 592.8])]), K, distortion) #0,0,-
-    point1 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([814, 501.5])]), cameraOfLastKeyframe, np.asarray([np.asarray([949, 429.5])]), K, distortion) #0,0,0
+    point1 = triangulate_points(first_keyframe_camera, np.asarray([np.asarray([814, 501.5])]),
+                                last_keyframe_camera, np.asarray([np.asarray([949, 429.5])]), K, distortion)
+    point2 = triangulate_points(first_keyframe_camera, np.asarray([np.asarray([1072.5, 500])]),
+                                last_keyframe_camera, np.asarray([np.asarray([1141, 566.8])]), K, distortion)
+    point5 = triangulate_points(first_keyframe_camera, np.asarray([np.asarray([794.2, 744.2])]),
+                                last_keyframe_camera, np.asarray([np.asarray([683.2, 592.8])]), K, distortion)
+    point6 = triangulate_points(first_keyframe_camera, np.asarray([np.asarray([1092.2, 741])]),
+                                last_keyframe_camera, np.asarray([np.asarray([874.8, 757.2])]), K, distortion)
     sideLen = point1[0][1] - point5[0][1]
 
-    point2 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([1072.5, 500])]), cameraOfLastKeyframe, np.asarray([np.asarray([1141, 566.8])]), K, distortion)
-    point3 = np.asarray([[point1[0][0] - sideLen, point1[0][1] + sideLen, point1[0][2] + sideLen*1.15]]) #-,+,0
-    point4 = np.asarray([[point1[0][0], point1[0][1] + sideLen, point1[0][2] + sideLen*1.15]]) #0,+,0
-    point6 = triangulate_points(cameraOfFirstKeyframe, np.asarray([np.asarray([1092.2, 741])]), cameraOfLastKeyframe, np.asarray([np.asarray([874.8, 757.2])]), K, distortion)
-    point7 = np.asarray([[point1[0][0] - sideLen, point1[0][1], point1[0][2] + sideLen*2]]) #-,0,+
-    point8 = np.asarray([[point1[0][0], point1[0][1], point1[0][2] + sideLen*2]]) #0,0,+
+    point3 = np.asarray([[point1[0][0] - sideLen, point1[0][1] + sideLen, point1[0][2] + sideLen*1.15]])
+    point4 = np.asarray([[point1[0][0], point1[0][1] + sideLen, point1[0][2] + sideLen*1.15]])
+    point7 = np.asarray([[point1[0][0] - sideLen, point1[0][1], point1[0][2] + sideLen*2]])
+    point8 = np.asarray([[point1[0][0], point1[0][1], point1[0][2] + sideLen*2]])
 
+    cube_points_3d = np.asarray([point1[0], point2[0], point3[0], point4[0], point5[0], point6[0], point7[0], point8[0]])
 
     # Pass projected Points to draw the wireframe cube in the image
     for i in tqdm(range(keyframes[-1]+1)):
 
-        # Array to store cube corners
-        cube = []
-
         # Transform points from 3D World coordinates to 2D image coordinates and add them to array
-        point1_2D, _ = cv2.projectPoints(point1, cameras[i].R_vec(), cameras[i].t, K, distortion)
-        point2_2D, _ = cv2.projectPoints(point2, cameras[i].R_vec(), cameras[i].t, K, distortion)
-        point3_2D, _ = cv2.projectPoints(point3, cameras[i].R_vec(), cameras[i].t, K, distortion)
-        point4_2D, _ = cv2.projectPoints(point4, cameras[i].R_vec(), cameras[i].t, K, distortion)
-        point5_2D, _ = cv2.projectPoints(point5, cameras[i].R_vec(), cameras[i].t, K, distortion)
-        point6_2D, _ = cv2.projectPoints(point6, cameras[i].R_vec(), cameras[i].t, K, distortion)
-        point7_2D, _ = cv2.projectPoints(point7, cameras[i].R_vec(), cameras[i].t, K, distortion)
-        point8_2D, _ = cv2.projectPoints(point8, cameras[i].R_vec(), cameras[i].t, K, distortion)
-        cube.append(point1_2D)
-        cube.append(point2_2D)
-        cube.append(point3_2D)
-        cube.append(point4_2D)
-        cube.append(point5_2D)
-        cube.append(point6_2D)
-        cube.append(point7_2D)
-        cube.append(point8_2D)
+        cube, _ = cv2.projectPoints(cube_points_3d, cameras[i].R_vec(), cameras[i].t, K, distortion)
 
         # Get the image with a wireframe cube in it
         img = draw_wireframe_cube(all_frames[i], cube)
@@ -140,7 +130,6 @@ def main():
 
     # Convert all frames to generate a output video
     convert_frames_to_video(VIDEO_OUTPUT_FRAMES_PATH, VIDEO_OUTPUT_PATH, 15)
-
 
 
 if __name__ == "__main__":
