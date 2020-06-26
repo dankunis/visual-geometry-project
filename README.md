@@ -64,7 +64,7 @@ python3 main.py
 
 ## Report
 
-A detailed report about this project can be found as a [markdown file](./report/report.md), and as a [pdf](./report/report.pdf).
+A detailed report about this project can be found [here](./report/report.pdf).
 
 
 
