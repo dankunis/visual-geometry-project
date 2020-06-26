@@ -5,3 +5,5 @@ src/__pycache__/
 # Project specific
 resources/vid_to_img
 resources/img_with_drawings
+resources/feature_matching_output
+resources/output.avi
