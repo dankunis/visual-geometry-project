@@ -3,6 +3,17 @@
 This is the official repo for the Match Mover  Project for 703610 VO/1 VO Visuelle Geometrie 2020
 
 
+
+## Demo
+
+![Alt Text](./resources/result.gif)
+
+
+## Report
+
+A detailed report about this project can be found [here](./report/report.pdf).
+
+
 ## Getting Started
 
 This project was built and executed with Python 3.7.2 and OpenCV 3.4.2. For the optimal experience please use this version. It might run on other python and OpenCV versions, however we can not garantuee it will.
@@ -61,17 +72,6 @@ We provide intermediate results (camera calibration results and keypoint matchin
 ```bash
 rm -rf ../resources/tmp/ ../resources/vid_to_img ../resources/calibration
 ```
-
-
-
-## Demo
-
-![Alt Text](./resources/result.gif)
-
-
-## Report
-
-A detailed report about this project can be found [here](./report/report.pdf).
 
 
 
